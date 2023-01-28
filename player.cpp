@@ -31,3 +31,8 @@ void Player::updatePlayerPosition(int velocity, float deltaTime)
 {
     animData->pos.y += velocity * deltaTime;
 }
+
+int Player::getJumpVel()
+{
+    return jumpVel;
+}

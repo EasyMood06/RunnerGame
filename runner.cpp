@@ -34,7 +34,7 @@ void updateAnimData(AnimData *data, float deltaTime, int maxFrame)
 int main()
 {
     // initialize the window
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Dapper Dasher!");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Tap Dasher!");
 
     // acceleration due to gravity (pixels/s)/s
     const int gravity{1'000};
@@ -64,26 +64,22 @@ int main()
 
     // scarfy variables
     Texture2D player_texture = LoadTexture("textures/scarfy.png");
-    AnimData scarfyData = {
+    AnimData playerData = {
         {0, 0, player_texture.width/6, player_texture.height},
-        {WINDOW_WIDTH/2 - scarfyData.rec.width/2, WINDOW_HEIGHT - scarfyData.rec.height},
+        {WINDOW_WIDTH/2 - playerData.rec.width/2, WINDOW_HEIGHT - playerData.rec.height},
         0,
         1.0/12.0,
         0.0
     };
-    Player player(&scarfyData, WINDOW_HEIGHT, &player_texture);
+    Player player(&playerData, WINDOW_HEIGHT, &player_texture);
 
-    // is the rectanlge in the air?
+    // check play status
     bool isInAir{};
-    // jump velocity (pixels/second)
-    const int jumpVel{-600};
-
     int vertical_velocity{0};
+    bool isDead{};
 
     Texture2D background = LoadTexture("art_contents/PNG/game_background_1/game_background_1.png");
     float bgX{};
-
-    bool collision{};
 
     SetTargetFPS(60);
     while (!WindowShouldClose())
@@ -125,7 +121,7 @@ int main()
         // jump check
         if (IsKeyPressed(KEY_SPACE) && !isInAir)
         {
-            vertical_velocity += jumpVel;
+            vertical_velocity += player.getJumpVel();
         }
 
         for (int i = 0; i < sizeOfObstacle; i++)
@@ -151,7 +147,7 @@ int main()
             updateAnimData(&obstacle_data[i], dT, 7);
         }
 
-        // check collision
+        // check isDead
         for (AnimData nebula : obstacle_data)
         {
             float pad{50};
@@ -162,23 +158,23 @@ int main()
                 nebula.rec.height - 2*pad
             };
             Rectangle scarfyRec{
-                scarfyData.pos.x,
-                scarfyData.pos.y,
-                scarfyData.rec.width,
-                scarfyData.rec.height
+                playerData.pos.x,
+                playerData.pos.y,
+                playerData.rec.width,
+                playerData.rec.height
             };
             if (CheckCollisionRecs(nebRec, scarfyRec))
             {
-                collision = true;
+                isDead = true;
             }
         }
 
-        if (collision)
+        if (isDead)
         {
             // lose the game
             DrawText("Game Over!", WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 40, RED);
         }
-        else if (scarfyData.pos.x >= finishLine)
+        else if (playerData.pos.x >= finishLine)
         {
             // win the game
             DrawText("You Win!", WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 40, RED);
@@ -192,7 +188,7 @@ int main()
             }
 
             // draw player_texture
-            DrawTextureRec(player_texture, scarfyData.rec, scarfyData.pos, WHITE);
+            DrawTextureRec(player_texture, playerData.rec, playerData.pos, WHITE);
         }
 
         // stop drawing

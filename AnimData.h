@@ -12,6 +12,4 @@ struct AnimData
     float runningTime;
 };
 
-
-
 #endif

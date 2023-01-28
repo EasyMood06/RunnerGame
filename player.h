@@ -10,10 +10,12 @@ public:
     bool isOnGround();
     void updateAnimData(float deltaTime, int maxFrame);
     void updatePlayerPosition(int velocity, float deltaTime);
+    int getJumpVel();
 private:
     Texture2D *character;
     AnimData *animData;
     int windowHeight;
+    int jumpVel = -600;
 };
 
 #endif
